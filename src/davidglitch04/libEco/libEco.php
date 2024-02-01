@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace davidglitch04\libEco;
 
 use Closure;
-use cooldogedev\BedrockEconomy\libs\cooldogedev\libSQL\context\ClosureContext;
+use cooldogedev\BedrockEconomy\api\legacy\ClosureContext;
+use cooldogedev\BedrockEconomy\BedrockEconomy;
+use cooldogedev\BedrockEconomy\api\BedrockEconomyAPI;
+use cooldogedev\BedrockEconomy\api\version\LegacyBEAPI;
 use davidglitch04\libEco\Utils\Utils;
 use onebone\economyapi\EconomyAPI;
 use pocketmine\player\Player;
@@ -46,7 +49,7 @@ final class libEco
             assert(is_float($money));
             $callback($money);
         } elseif (self::getEconomy()[0] === Utils::BEDROCKECONOMYAPI) {
-            self::getEconomy()[1]->getAPI()->getPlayerBalance($player->getName(), ClosureContext::create(static function (?int $balance) use ($callback): void {
+            self::getEconomy()[1]->legacy()->getPlayerBalance($player->getName(), ClosureContext::create(static function (?int $balance) use ($callback): void {
                 $callback($balance ?? 0);
             }));
         }
@@ -57,7 +60,7 @@ final class libEco
         if (self::getEconomy()[0] === Utils::ECONOMYAPI) {
             self::getEconomy()[1]->addMoney($player, $amount);
         } elseif (self::getEconomy()[0] === Utils::BEDROCKECONOMYAPI) {
-            self::getEconomy()[1]->getAPI()->addToPlayerBalance($player->getName(), (int) $amount);
+            self::getEconomy()[1]->legacy()->addToPlayerBalance($player->getName(), (int) $amount);
         }
     }
 
@@ -66,7 +69,7 @@ final class libEco
         if (self::getEconomy()[0] === Utils::ECONOMYAPI) {
             $callback(self::getEconomy()[1]->reduceMoney($player, $amount) === EconomyAPI::RET_SUCCESS);
         } elseif (self::getEconomy()[0] === Utils::BEDROCKECONOMYAPI) {
-            self::getEconomy()[1]->getAPI()->subtractFromPlayerBalance($player->getName(), (int) ceil($amount), ClosureContext::create(static function (bool $success) use ($callback): void {
+            self::getEconomy()[1]->legacy()->subtractFromPlayerBalance($player->getName(), (int) ceil($amount), ClosureContext::create(static function (bool $success) use ($callback): void {
                 $callback($success);
             }));
         }
